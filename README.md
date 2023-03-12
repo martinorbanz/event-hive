@@ -1,8 +1,8 @@
 # event-hive
  
-## Dispatch and listen to events from any module.
+## Dispatch and listen to events from anywhere.
 
-EventHive lets JavaScript modules exchange information without any knowledge of each other. 
+EventHive lets JavaScript modules exchange information without any knowledge of each other, in a centralized or decentralized manner.
 This is mainly intended to make life easier in two architecture/development aspects:
 - Loose coupling of *business domains* or *bounded contexts*, i.e. building blocks of your app whose code should remain separated. 
 - Avoiding circular dependencies.
@@ -42,7 +42,7 @@ Events can be organized into namespaces for separation of concerns.
 
 You can choose wether to distribute in the `Common` scope which runs application wide - even cross-application in ModuleFederation, or confined to a part of your app for access control.
 
-### No more worres about circular dependencies
+### Less worries about circular dependencies
 
 Imagine two modules `a` and `b` that shall exchange data. They can not import each other since that would cause a circular dependency. You could could create an Observable to emit information and a consumer function to take it in on both of them, and build a module `c` on top that imports `a` and `b`, connectiong their data traffic. That could quickly get error prone as more participants come in. And maybe the communication module needs to talk to another one. 
 
@@ -55,6 +55,9 @@ These concepts are good to know, but it's possible to skip them and just start u
 ### Scopes
 
 `EventHive` operates in two`scopes`, `common` and `private`. 
+
+#### Common
+
 The `common scope` is always defined as *all modules importing EventHive from the same source*. So if it is installed in `node_modules` and all imports take place from there, your entire application will share the same `common scope` in `EventHive`. 
 If you are using ModuleFederation and federation members share `EventHive` as a resource, these members will also share the same `common scope`, meaning they can exchange common `Events`.
 
@@ -62,6 +65,8 @@ The `common scope` is accessed by using the `common methods`:
 ```ts
 import { addCommonListener, removeCommonListener, dispatchCommonEvent } from 'event-hive'
 ```
+
+#### Private
 
 If you want to limit event accessibility to a certain part of your app, say a bounded context, you can use a `private scope` simply by instantiating the `EventHive` class in module available to the desired app layer and exposing its instance methods.
 ```ts
