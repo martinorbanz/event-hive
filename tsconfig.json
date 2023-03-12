@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "outDir": "./lib",
+    "allowJs": true,
+    "esModuleInterop": true,
+    "module": "CommonJS",
+    "target": "ES5",
+    "baseUrl": ".",
+    "moduleResolution": "node",
+    "declaration": true
+  }
+}

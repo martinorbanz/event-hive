@@ -1,0 +1,16 @@
+{
+  "name": "event-hive",
+  "version": "0.1.0-beta",
+  "description": "Dispatch and listen to events from any module.",
+  "private": true,
+  "main": "lib/index.js",
+  "scripts": {
+    "build": "rm -rf ./lib && ./node_modules/typescript/bin/tsc",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Martin Orbanz",
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^4.9.4"
+  }
+}
