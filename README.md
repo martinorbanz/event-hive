@@ -68,7 +68,7 @@ import { addCommonListener, removeCommonListener, dispatchCommonEvent } from 'ev
 
 #### Private
 
-If you want to limit event accessibility to a certain part of your app, say a bounded context, you can use a `private scope` simply by instantiating the `EventHive` class in module available to the desired app layer and exposing its instance methods.
+If you want to limit event accessibility to a certain part of your app, say a bounded context, you can use a `private scope` simply by instantiating the `EventHive` class in a module available to the desired app layer and exposing its instance methods.
 ```ts
 import { EventHive } from 'event-hive'
 
