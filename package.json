@@ -1,6 +1,6 @@
 {
   "name": "event-hive",
-  "version": "0.1.0-beta",
+  "version": "0.1.1-beta",
   "description": "Dispatch and listen to events from any module.",
   "private": true,
   "main": "lib/index.js",
