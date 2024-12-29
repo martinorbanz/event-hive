@@ -2,61 +2,93 @@ import { Emitter, EventSubscription, EventCallback } from '../Observable/Emitter
 import { Event } from '../Events'
 
 interface IEventHive {
-  addListener: <T>(type: string, handler: EventCallback<Event<T>>) => EventSubscription
-  removeListener: <T>(type: string, handler: EventCallback<Event<T>>) => void
-  dispatchEvent: <T>(event: Event<T>) => void
+  addListener: <T extends string, P>(type: string, handler: EventCallback<Event<T, P>>) => EventSubscription
+  removeListener: <T extends string, P>(type: string, handler: EventCallback<Event<T, P>>) => void
+  dispatchEvent: <T extends string, P>(event: Event<T, P>) => void
+  createEvent: <T extends string, P>(type: T, payload: P) => Event<T, P>
 }
 
-export const NS_DEFAULT = 'default'
 
-const registry = {}
-registry[NS_DEFAULT] = {}
+export type StringEnum<E> = Record<keyof E, string>
 
-export class EventHive implements IEventHive {
+export type EventNamespaceConstraint<E> = Record<string, StringEnum<E>>
 
-  registerEvent<T>(type: string, namespace: string = NS_DEFAULT) {
-    if (!registry[namespace]) registry[namespace] = {}
-    if (!registry[namespace][type]) {
-      registry[namespace][type] = new Emitter<Event<T>>()
+export class EventHive<E> implements IEventHive {
+  static NS_DEFAULT = 'default'
+
+  #registry = {}
+  #constraint: EventNamespaceConstraint<E>
+
+  constructor(constraint?: EventNamespaceConstraint<E>) {
+    this.#registry[EventHive.NS_DEFAULT] = {}
+    if (constraint) {
+      this.#constraint = constraint
     }
   }
 
-  addListener<T>(type: string, handler: EventCallback<Event<T>>, namespace: string = NS_DEFAULT): EventSubscription {
+  registerEvent<T extends string, P>(type: string, namespace: string = EventHive.NS_DEFAULT) {
+    if (
+      this.#constraint &&
+      !this.#constraint[namespace] ||
+      !Object.values(this.#constraint[namespace]).includes(type)
+    ) {
+      throw new Error('Attempted to register an Event that does not match the constraint.')
+    }
+
+    if (!this.#registry[namespace]) {
+      this.#registry[namespace] = {}
+    }
+    if (!this.#registry[namespace][type]) {
+      this.#registry[namespace][type] = new Emitter<Event<T, P>>()
+    }
+  }
+
+  addListener<T extends string, P>(type: string, handler: EventCallback<Event<T, P>>, namespace: string = EventHive.NS_DEFAULT): EventSubscription {
     this.registerEvent(type, namespace)
-    return registry[namespace][type].subscribe(handler)
+    return this.#registry[namespace][type].subscribe(handler)
   }
 
   removeEmptyEvent(type: string, namespace: string) {
     if (
-      registry[namespace]
-      && registry[namespace][type]
-      && registry[namespace][type].subscribers.length === 0) {
-      delete registry[namespace][type]
+      this.#registry[namespace]
+      && this.#registry[namespace][type]
+      && this.#registry[namespace][type].subscribers.length === 0) {
+      delete this.#registry[namespace][type]
     }
   }
 
   removeEmptyNamespace(namespace: string) {
     if (
-      registry[namespace]
-      && Object.keys(registry[namespace]).length === 0
+      this.#registry[namespace]
+      && Object.keys(this.#registry[namespace]).length === 0
     ) (
-      delete registry[namespace]
+      delete this.#registry[namespace]
     )
   }
 
-  removeListener<T>(type: string, handler: EventCallback<Event<T>>, namespace: string = NS_DEFAULT) {
-    if (registry[namespace] && registry[namespace][type]) {
-      registry[namespace][type].removeSubscriber(handler)
+  removeListener<T extends string, P>(type: string, handler: EventCallback<Event<T, P>>, namespace: string = EventHive.NS_DEFAULT) {
+    if (this.#registry[namespace] && this.#registry[namespace][type]) {
+      this.#registry[namespace][type].removeSubscriber(handler)
     }
     this.removeEmptyEvent(type, namespace)
     this.removeEmptyNamespace(namespace)
   }
 
-  dispatchEvent<T>(event: Event<T>, namespace: string = NS_DEFAULT) {
+  dispatchEvent<T extends string, P>(event: Event<T, P>, namespace: string = EventHive.NS_DEFAULT) {
     this.registerEvent(event.type, namespace)
-    registry[namespace][event.type].next(event)
+    this.#registry[namespace][event.type].next(event)
   }
 
-  public static readonly singleton = new EventHive()
+  private deleteNamespace(namespace: string) {
+    delete this.#registry[namespace];
+  }
+
+  deleteAllNamespaces() {
+    Object.keys(this.#registry).forEach((namespace) => {
+      this.deleteNamespace(namespace);
+    })
+  }
+
+  createEvent<T extends string, P>(type: T, payload?: P) { return new Event(type, payload) }
 
 }

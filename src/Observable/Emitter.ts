@@ -2,11 +2,11 @@ export interface EventSubscription {
   unsubscribe: () => void
 }
 
-export type EventCallback<T> = (payload: T) => unknown
+export type EventCallback<T> = (event: T) => unknown
 
 export interface ISubject<T> {
   subscribe(value: EventCallback<T>): EventSubscription
-  next(payload?: T): void
+  next(event?: T): void
 }
 
 export class Emitter<T = string> implements ISubject<T> {
