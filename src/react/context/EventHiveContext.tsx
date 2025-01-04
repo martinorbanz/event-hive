@@ -1,20 +1,20 @@
 import { EventHive, EventNamespaceConstraint } from '../../Hive';
 import { ReactNode, createContext, useEffect, useMemo } from 'react';
 
-interface EventHiveContextProps<T = undefined> {
+interface EventHiveContextProps<T extends EventNamespaceConstraint = undefined> {
     addListener: EventHive<T>['addListener'];
     createEvent: EventHive<T>['createEvent'];
     dispatchEvent: EventHive<T>['dispatchEvent'];
 };
 
-interface EventHiveContextProviderProps<T = undefined> {
+interface EventHiveContextProviderProps {
     children: ReactNode;
-    constraint?: EventNamespaceConstraint<T>;
+    constraint?: EventNamespaceConstraint;
 }
 
 export const EventHiveContext = createContext<EventHiveContextProps>({} as EventHiveContextProps);
 
-export function EventHiveContextProvider <T>({children, constraint}: EventHiveContextProviderProps<T>)  {
+export function EventHiveContextProvider <T>({children, constraint}: EventHiveContextProviderProps)  {
     const eventHive = useMemo(() => new EventHive(constraint), [constraint]);
 
     const value = useMemo(() => ({

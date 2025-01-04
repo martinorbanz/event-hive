@@ -1,6 +1,6 @@
 export interface IEvent<T extends string, P = undefined> {
-  type: T
-  payload: P
+  type: T;
+  payload: P;
 }
 
 export class Event<T extends string, P = undefined> implements IEvent<T, P>{

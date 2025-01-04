@@ -1,6 +1,4 @@
-export {
-  Event
-} from './Events'
+export * from './Events'
 
 export {
   addCommonListener,

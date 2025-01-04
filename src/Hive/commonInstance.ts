@@ -1,6 +1,6 @@
 import { Event } from "../Events"
 import { EventSubscription, EventCallback } from "../Observable/Emitter"
-import { EventHive } from "./EventHive"
+import { EventHive } from "./UnconstrainedEventHive"
 
 const commonHiveInstance = new EventHive();
 
