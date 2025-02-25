@@ -1,1 +1,1 @@
-export * from './EventHiveContext';
+export { EventHiveContext, EventHiveContextProvider } from "./EventHiveContext";

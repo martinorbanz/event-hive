@@ -8,6 +8,6 @@ export {
 
 export { EventHive } from './Hive'
 
-export {EventCallback} from './Observable/Emitter'
+export type {EventCallback} from './Observable/Emitter'
 
 export * from './react';

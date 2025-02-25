@@ -1,14 +1,18 @@
-export interface IEvent<T extends string, P = undefined> {
-  type: T;
-  payload: P;
+export interface IEventPayload<P> {
+  value: P
+};
+
+export interface IEvent<T = undefined> {
+  type: string;
+  payload?: IEventPayload<T>;
 }
 
-export class Event<T extends string, P = undefined> implements IEvent<T, P>{
+export class Event<P = undefined> implements IEvent<P>{
 
-  type: T
-  payload: P
+  type: string;
+  payload: IEventPayload<P> | undefined;
 
-  constructor(type: T, payload?: P) {
+  constructor(type: T, payload?: IEventPayload<P>) {
     this.type = type
     this.payload = payload
   }

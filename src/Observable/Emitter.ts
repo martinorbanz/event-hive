@@ -9,7 +9,7 @@ export interface ISubject<T> {
   next(event?: T): void
 }
 
-export class Emitter<T = string> implements ISubject<T> {
+export class Emitter<T> implements ISubject<T> {
   subscribers: EventCallback<T>[] = []
 
   currentValue: T | undefined
@@ -34,10 +34,10 @@ export class Emitter<T = string> implements ISubject<T> {
     return newSubscription
   }
 
-  next(payload: T): void {
-    this.currentValue = payload
+  next(event: T): void {
+    this.currentValue = event
     this.subscribers.forEach((callback: EventCallback<T>) => {
-      callback(payload)
+      callback(event)
     })
   }
 }

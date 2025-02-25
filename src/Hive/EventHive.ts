@@ -3,27 +3,23 @@ import {
   EventSubscription,
   EventCallback,
 } from "../Observable/Emitter";
-import { Event, IEvent } from "../Events";
+import { IEvent, IEventPayload } from "../Events";
 
 export type EventNamespaceConstraint = Record<string, Array<string>>
 
 export type ConstrainedEventNames<T extends EventNamespaceConstraint> = T[keyof T][number];
 
-
 interface IEventHive {
-  addListener: <T extends EventNamespaceConstraint, P = undefined>(
-    type: ConstrainedEventNames<T>,
-    handler: EventCallback<IEvent<ConstrainedEventNames<T>, P>>
-  ) => EventSubscription;
-  removeListener: <T extends EventNamespaceConstraint, P = undefined>(
+  addListener: <T, P extends IEventPayload<T>>(
     type: string,
-    handler: EventCallback<IEvent<ConstrainedEventNames<T>, P>>
+    handler: EventCallback<IEvent<P>>
+  ) => EventSubscription;
+  removeListener: <T, P extends IEventPayload<T>>(
+    type: string,
+    handler: EventCallback<IEvent<P>>
   ) => void;
-  dispatchEvent: <T extends EventNamespaceConstraint, P = undefined>(event: IEvent<ConstrainedEventNames<T>, P>) => void;
-  createEvent: <T extends EventNamespaceConstraint, P = undefined>(type: ConstrainedEventNames<T> , payload: P) => IEvent<ConstrainedEventNames<T>, P>;
+  dispatchEvent: <P = undefined>(event: IEvent<P>) => void;
 }
-
-// export type StringEnum<E> = Record<keyof E, string>
 
 function findConstraintMatches(
   name: string,
@@ -43,7 +39,7 @@ export class EventHive<C extends EventNamespaceConstraint>
 {
   static NS_DEFAULT = "default";
 
-  #registry = {};
+  #registry: Record<string, Record<string, Emitter<IEvent<IEventPayload<never>>>>> = {};
   #constraint: C;
 
   constructor(constraint: C) {
@@ -51,7 +47,7 @@ export class EventHive<C extends EventNamespaceConstraint>
     this.#constraint = constraint;
   }
 
-  registerEvent<T extends string, P>(
+  registerEvent<T, P extends IEventPayload<T>>(
     type: string,
     namespace: string = EventHive.NS_DEFAULT
   ) {
@@ -68,7 +64,7 @@ export class EventHive<C extends EventNamespaceConstraint>
           this.#registry[namespace] = {};
         }
         if (!this.#registry[namespace][type]) {
-          this.#registry[namespace][type] = new Emitter<Event<T, P>>();
+          this.#registry[namespace][type] = new Emitter<IEvent<P>>();
         }
         break;
 
@@ -81,7 +77,7 @@ export class EventHive<C extends EventNamespaceConstraint>
 
   addListener<P>(
     type: string,
-    handler: EventCallback<IEvent<string, P>>,
+    handler: EventCallback<IEvent<P>>,
     namespace: string = EventHive.NS_DEFAULT
   ): EventSubscription {
     this.registerEvent(type, namespace);
@@ -106,9 +102,9 @@ export class EventHive<C extends EventNamespaceConstraint>
       delete this.#registry[namespace];
   }
 
-  removeListener<T extends string, P>(
+  removeListener<P>(
     type: string,
-    handler: EventCallback<IEvent<T, P>>,
+    handler: EventCallback<IEvent<P>>,
     namespace: string = EventHive.NS_DEFAULT
   ) {
     if (this.#registry[namespace] && this.#registry[namespace][type]) {
@@ -118,8 +114,8 @@ export class EventHive<C extends EventNamespaceConstraint>
     this.removeEmptyNamespace(namespace);
   }
 
-  dispatchEvent<T extends string, P = undefined>(
-    event: IEvent<T, P>,
+  dispatchEvent<P = undefined>(
+    event: IEvent<P>,
     namespace: string = EventHive.NS_DEFAULT
   ) {
     this.registerEvent(event.type, namespace);
@@ -134,9 +130,5 @@ export class EventHive<C extends EventNamespaceConstraint>
     Object.keys(this.#registry).forEach((namespace) => {
       this.deleteNamespace(namespace);
     });
-  }
-
-  createEvent<T extends EventNamespaceConstraint, P>(type: ConstrainedEventNames<T>, payload?: P) {
-    return new Event(type, payload);
   }
 }
