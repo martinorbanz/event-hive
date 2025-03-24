@@ -7,8 +7,6 @@ import { IEvent, IEventPayload } from "../Events";
 
 export type EventNamespaceConstraint = Record<string, Array<string>>
 
-export type ConstrainedEventNames<T extends EventNamespaceConstraint> = T[keyof T][number];
-
 interface IEventHive {
   addListener: <T, P extends IEventPayload<T>>(
     type: string,
@@ -39,7 +37,7 @@ export class EventHive<C extends EventNamespaceConstraint>
 {
   static NS_DEFAULT = "default";
 
-  #registry: Record<string, Record<string, Emitter<IEvent<IEventPayload<never>>>>> = {};
+  #registry: Record<string, Record<string, Emitter<IEvent<unknown>>>> = {};
   #constraint: C;
 
   constructor(constraint: C) {
@@ -47,7 +45,7 @@ export class EventHive<C extends EventNamespaceConstraint>
     this.#constraint = constraint;
   }
 
-  registerEvent<T, P extends IEventPayload<T>>(
+  registerEvent<P = undefined>(
     type: string,
     namespace: string = EventHive.NS_DEFAULT
   ) {

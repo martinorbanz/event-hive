@@ -1,24 +1,28 @@
-import { useContext, useEffect, useMemo } from "react"
+import { useCallback, useContext, useEffect, useState } from "react"
 import { EventHiveContext } from "../context"
 import { IEvent } from "src/Events";
-import { EventCallback } from "src/Hive";
+import { EventCallback, EventSubscription } from "src/Hive";
 
-interface useEventSubscriptionProps<T extends string, P = undefined> {
-    type: T,
-    payload?: P,
+interface useEventSubscriptionProps<T extends IEvent> {
+    type: T['type'],
+    payload?: T['payload'],
     namespace?: string,
-    handler: EventCallback<IEvent<string, P>>
+    handler: EventCallback<T>
 }
 
-export const useEventSubscription = <T extends string, P>({type, payload, namespace, handler}: useEventSubscriptionProps<T, P>) => {
+export const useEventSubscription = <T extends IEvent>({type, payload, namespace, handler}: useEventSubscriptionProps<T>) => {
     const {addListener} = useContext(EventHiveContext);
 
-    const subscription = useMemo(() => addListener(type, handler, namespace), [addListener]);
+    const [subscription, setSubscription] = useState<EventSubscription>();
+
+    subscription?.unsubscribe();
+
+    setSubscription(addListener(type, handler, namespace))
 
     useEffect(() => {
         return () => {
             console.log(`unsubscribe from event: ${type}`);
-            subscription.unsubscribe();
+            subscription?.unsubscribe();
         }
     });
 }
