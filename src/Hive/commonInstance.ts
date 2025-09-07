@@ -1,11 +1,11 @@
-import { Event } from "../Events"
-import { EventSubscription, EventCallback } from "../Observable/Emitter"
-import { EventHive, NS_DEFAULT } from "./EventHive"
+import { IEvent } from "../events";
+import { EventCallback, EventSubscription } from "../observable";
+import { UnconstrainedEventHive as EventHive } from "./UnconstrainedEventHive";
 
-const commonHiveInstance = new EventHive();
+const commonHiveInstance = new EventHive({ stateful: true });
 
-export const dispatchCommonEvent = (event: Event<unknown>, namespace: string = NS_DEFAULT) => commonHiveInstance.dispatchEvent(event, namespace);
+export const dispatchCommonEvent = (event: IEvent<unknown>, namespace: string = EventHive.NS_DEFAULT) => commonHiveInstance.dispatchEvent(event, namespace);
 
-export const addCommonListener = <T>(type: string, handler: EventCallback<Event<T>>, namespace: string = NS_DEFAULT): EventSubscription => commonHiveInstance.addListener(type, handler, namespace);
+export const addCommonListener = (type: string, handler: EventCallback<IEvent<unknown>>, namespace: string = EventHive.NS_DEFAULT): EventSubscription => commonHiveInstance.addListener(type, handler, namespace);
 
-export const removeCommonListener = <T>(type: string, handler: EventCallback<Event<T>>, namespace: string = NS_DEFAULT) => commonHiveInstance.removeListener(type, handler, namespace);
+export const removeCommonListener = (type: string, handler: EventCallback<IEvent<unknown>>, namespace: string = EventHive.NS_DEFAULT) => commonHiveInstance.removeListener(type, handler, namespace);
