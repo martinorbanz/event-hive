@@ -1,43 +1,57 @@
+import { IEvent } from "../events";
+
 export interface EventSubscription {
-  unsubscribe: () => void
+  unsubscribe: () => void;
 }
 
-export type EventCallback<T> = (payload: T) => unknown
+export type EventCallback<T extends IEvent<unknown>> = (event: T) => unknown;
 
-export interface ISubject<T> {
-  subscribe(value: EventCallback<T>): EventSubscription
-  next(payload?: T): void
+export interface ISubject<T extends IEvent<unknown>> {
+  subscribe(value: EventCallback<IEvent<unknown>>): EventSubscription;
+  next(event?: T): void;
 }
 
-export class Emitter<T = string> implements ISubject<T> {
-  subscribers: EventCallback<T>[] = []
+export type EmitterOptions = {
+  stateful?: boolean;
+};
 
-  currentValue: T | undefined
+export class Emitter<T extends IEvent<unknown>> {
+  private subscribers = new Set<EventCallback<T>>();
+  private currentValue?: T;
+  private isStateful: boolean;
 
-  removeSubscriber(
-    callback: EventCallback<T>
-  ): void {
-    this.subscribers = this.subscribers.filter(
-      (storedSubscriber) => storedSubscriber !== callback
-    )
+  constructor({ stateful = false }: EmitterOptions = {}) {
+    this.isStateful = stateful;
   }
 
   subscribe(callback: EventCallback<T>): EventSubscription {
-    this.removeSubscriber(callback)
-    this.subscribers = [...this.subscribers, callback]
-    const newSubscription: EventSubscription = {
-      unsubscribe: () => {
-        this.removeSubscriber(callback)
-      }
+    this.subscribers.add(callback);
+    if (this.isStateful && this.currentValue) {
+      callback(this.currentValue);
     }
-    if (this.currentValue) callback(this.currentValue)
-    return newSubscription
+    return {
+      unsubscribe: () => {
+        this.subscribers.delete(callback);
+      },
+    };
   }
 
-  next(payload: T): void {
-    this.currentValue = payload
-    this.subscribers.forEach((callback: EventCallback<T>) => {
-      callback(payload)
-    })
+  next(event: T): void {
+    if (this.isStateful) this.currentValue = event;
+    for (const callback of this.subscribers) {
+      callback(event);
+    }
   }
-}
+
+  getSubscriberCount(): number {
+    return this.subscribers.size;
+  }
+
+  clear(): void {
+    this.subscribers.clear();
+  }
+
+  removeSubscriber(subscriber: EventCallback<T>): void {
+    this.subscribers.delete(subscriber);
+  }
+};

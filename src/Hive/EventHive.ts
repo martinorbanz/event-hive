@@ -1,62 +1,45 @@
-import { Emitter, EventSubscription, EventCallback } from '../Observable/Emitter'
-import { Event } from '../Events'
+import { IEvent } from "../events";
+import { EmitterOptions } from "../observable";
+import { UnconstrainedEventHive } from "./UnconstrainedEventHive";
 
-interface IEventHive {
-  addListener: <T>(type: string, handler: EventCallback<Event<T>>) => EventSubscription
-  removeListener: <T>(type: string, handler: EventCallback<Event<T>>) => void
-  dispatchEvent: <T>(event: Event<T>) => void
+export type EventNamespace = Array<IEvent<unknown>["type"]>;
+
+export type EventNamespaceConstraint = Record<
+  "default" | string,
+  EventNamespace
+>;
+
+function findConstraintMatches(
+  name: string,
+  constraint: EventNamespaceConstraint
+) {
+  const matches = Object.keys(constraint)
+    .map((namespace) => {
+      return constraint[namespace].includes(name) ? namespace : undefined;
+    })
+    .filter(Boolean);
+  return matches;
 }
 
-export const NS_DEFAULT = 'default'
+export class EventHive<C extends EventNamespaceConstraint> extends UnconstrainedEventHive {
+  constraint: C;
 
-const registry = {}
-registry[NS_DEFAULT] = {}
 
-export class EventHive implements IEventHive {
+  constructor(constraint: C, options?: EmitterOptions) {
+    super(options);
+    this.constraint = constraint;
+    Object.freeze(this.constraint);
+  }
 
-  registerEvent<T>(type: string, namespace: string = NS_DEFAULT) {
-    if (!registry[namespace]) registry[namespace] = {}
-    if (!registry[namespace][type]) {
-      registry[namespace][type] = new Emitter<Event<T>>()
+  registerEvent = (type: string, namespace: string = EventHive.NS_DEFAULT) => {
+    const matches = findConstraintMatches(type, this.constraint);
+
+    if (!matches.includes(namespace)) {
+      throw new Error(
+        `Attempted to register an Event that does not match the constraint: Event ${String(type)} in namespace ${String(namespace)}.` 
+      );
     }
-  }
 
-  addListener<T>(type: string, handler: EventCallback<Event<T>>, namespace: string = NS_DEFAULT): EventSubscription {
-    this.registerEvent(type, namespace)
-    return registry[namespace][type].subscribe(handler)
-  }
-
-  removeEmptyEvent(type: string, namespace: string) {
-    if (
-      registry[namespace]
-      && registry[namespace][type]
-      && registry[namespace][type].subscribers.length === 0) {
-      delete registry[namespace][type]
-    }
-  }
-
-  removeEmptyNamespace(namespace: string) {
-    if (
-      registry[namespace]
-      && Object.keys(registry[namespace]).length === 0
-    ) (
-      delete registry[namespace]
-    )
-  }
-
-  removeListener<T>(type: string, handler: EventCallback<Event<T>>, namespace: string = NS_DEFAULT) {
-    if (registry[namespace] && registry[namespace][type]) {
-      registry[namespace][type].removeSubscriber(handler)
-    }
-    this.removeEmptyEvent(type, namespace)
-    this.removeEmptyNamespace(namespace)
-  }
-
-  dispatchEvent<T>(event: Event<T>, namespace: string = NS_DEFAULT) {
-    this.registerEvent(event.type, namespace)
-    registry[namespace][event.type].next(event)
-  }
-
-  public static readonly singleton = new EventHive()
-
+    super.registerEvent(type, namespace);
+  };
 }
