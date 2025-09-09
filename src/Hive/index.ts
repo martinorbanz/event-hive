@@ -1,6 +1,7 @@
-export { Event } from "../Events"
-export { EventSubscription, EventCallback } from "../Observable/Emitter"
-export { EventHive, NS_DEFAULT } from "./EventHive"
+export * from "../events"
+export * from "../observable/Emitter"
+export * from "./EventHive"
+export * from "./UnconstrainedEventHive"
 export {
   addCommonListener,
   dispatchCommonEvent,
