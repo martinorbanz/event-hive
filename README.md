@@ -2,7 +2,7 @@
 
 *This document was created using chatbot support*
 
-**EventHive** is a lightweight, type-safe event system for Ty---
+**EventHive** is a lightweight, type-safe event system for TypeScript applications. It offers dynamic event registration, scoped namespaces, and lifecycle-safe React integration—without the overhead of a full state management library.
 
 ## 🧩 Namespaces {#namespaces}
 
@@ -226,11 +226,17 @@ Use `EventHive` for strict control, `UnconstrainedEventHive` for flexibility, an
 
 ## ⚛️ React Integration {#react-integration}
 
-EventHive provides hooks and context utilities for lifecycle-safe event handling.
+EventHive provides hooks and context utilities for lifecycle-safe event handling. 
+These will register Events and handlers in a Context Provider containing an Hive instance and provide a dispatch function. Listeners arer automatically deleted (unsubscribed) when the calling component unmounts. 
+*There is no need to keep track of subscriptions.*
 
 ### 🧬 Modular Context Setup
 
-Split context setup into two parts:
+EventHive does not provide a Context object of its own. Instead you create and export Contexts in the usual way using `createContext()`, and pass them to the React hooks.
+
+This way any component can use multiple EventHive scopes in different Context Providers simultaneously, e.g. a domain-specific one ('UserSettingEvents') and an app-wide one higher up in the tree.
+
+As a best practice create contexts in their own modules:
 
 #### `UserEventContext.tsx`
 
@@ -260,7 +266,7 @@ return (
 );
 ```
 
-### 🎧 Subscribing to Events
+### 🎧 Listening to Events
 
 Inside any component:
 
@@ -276,6 +282,21 @@ useHiveEvent<FooEvent>({
 
 Hooks fail gracefully if context is missing—allowing safe multi-scoping.
 
+### 📧 Dispatching Events
+
+A dispatch function is returned from the same hook, but no handler option is needed.
+
+```tsx
+const { dispatch } = useHiveEvent<FooEvent>({
+  context: UserEventContext,
+  type: FooEvent.type,
+});
+
+dispatch(new FooEvent({ value: "I've been dispatched" }));
+```
+
+If you need to both listen to and dispatch an event type from the same component just add the handler prop again.
+
 ---
 
 ## 📘 API Reference
@@ -288,12 +309,9 @@ Hooks fail gracefully if context is missing—allowing safe multi-scoping.
 new Event(type: string, payload?: P)
 ```
 
-- `type: string` - Event type identifier
-- `payload?: P` - Optional payload data of type P
-
 **Properties:**
 - `type: string` - The event type
-- `payload: P | undefined` - The event payload
+- `payload: P | undefined` - Optional payload data of generic type P (total freedom here)
 
 #### `UnconstrainedEventHive`
 
