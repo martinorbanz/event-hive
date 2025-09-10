@@ -4,11 +4,6 @@
 
 **EventHive** is a lightweight, type-safe event system for TypeScript applications. It offers dynamic event registration, scoped namespaces, and lifecycle-safe React integration—without the overhead of a full state management library.
 
-## 🧩 Namespaces {#namespaces}
-
-Namespaces organize events into domains like `"auth"`, `"form"`, or `"chat"`. You don't need to declare them ahead of time—they emerge organically, expanding the hive on demand but always trimming it to the minimum required size.ipt applications. It offers dynamic event registration, scoped namespaces, and lifecycle-safe React integration—without the overhead of a full state management library.
-
-Whether you're building a UI, a backend service, or a federated module, EventHive gives you clean, composable event handling with full control and zero to little boilerplate.
 
 ---
 
@@ -38,17 +33,17 @@ hive.addListener("ping", (event) => {
 hive.dispatchEvent(new Event("ping", { message: "Hello Hive!" }));
 ```
 
-### 🧠 Next Steps
+### Next Steps
 
-- Learn the [Core Concepts](#core-concepts)
-- Organize your system with [Namespaces](#namespaces)
+- Learn the [Core Concepts](#:brain:-core-concepts)
+- Organize your system with [Namespaces](#jigsaw-namespaces)
 - Choose the right layer in [Strategic Usage](#strategic-usage)
 - Add strong typing with [Type Safety](#type-safety)
 - Integrate cleanly with [React](#react-integration)
 
 ---
 
-## 🧠 Core Concepts {#core-concepts}
+## 🧠 Core Concepts
 
 EventHive is built around a few simple but powerful ideas that make event handling scalable, intuitive, and lifecycle-safe.
 
@@ -210,7 +205,7 @@ Use these in constraints and event construction for centralized naming.
 
 ---
 
-## 🧭 Strategic Usage {#strategic-usage}
+## 🧭 Strategic Usage
 
 EventHive offers three layers of abstraction:
 
@@ -224,7 +219,7 @@ Use `EventHive` for strict control, `UnconstrainedEventHive` for flexibility, an
 
 ---
 
-## ⚛️ React Integration {#react-integration}
+## ⚛️ React Integration
 
 EventHive provides hooks and context utilities for lifecycle-safe event handling. 
 These will register Events and handlers in a Context Provider containing an Hive instance and provide a dispatch function. Listeners arer automatically deleted (unsubscribed) when the calling component unmounts. 
