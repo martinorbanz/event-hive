@@ -39,7 +39,7 @@ export class Emitter<T extends IEvent<unknown>> {
   next(event: T): void {
     if (this.isStateful) this.currentValue = event;
     for (const callback of this.subscribers) {
-      callback(event);
+      Promise.resolve().then(() => callback(event));
     }
   }
 

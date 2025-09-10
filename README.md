@@ -1,6 +1,12 @@
 # 🐝 EventHive
 
-**EventHive** is a lightweight, type-safe event system for TypeScript applications. It offers dynamic event registration, scoped namespaces, and lifecycle-safe React integration—without the overhead of a full state management library.
+*This document was created using chatbot support*
+
+**EventHive** is a lightweight, type-safe event system for Ty---
+
+## 🧩 Namespaces {#namespaces}
+
+Namespaces organize events into domains like `"auth"`, `"form"`, or `"chat"`. You don't need to declare them ahead of time—they emerge organically, expanding the hive on demand but always trimming it to the minimum required size.ipt applications. It offers dynamic event registration, scoped namespaces, and lifecycle-safe React integration—without the overhead of a full state management library.
 
 Whether you're building a UI, a backend service, or a federated module, EventHive gives you clean, composable event handling with full control and zero to little boilerplate.
 
@@ -42,7 +48,7 @@ hive.dispatchEvent(new Event("ping", { message: "Hello Hive!" }));
 
 ---
 
-## 🧠 Core Concepts
+## 🧠 Core Concepts {#core-concepts}
 
 EventHive is built around a few simple but powerful ideas that make event handling scalable, intuitive, and lifecycle-safe.
 
@@ -153,7 +159,7 @@ const constraint = {
 
 ---
 
-## 🔐 Type Safety
+## 🔐 Type Safety {#type-safety}
 
 EventHive supports strong typing without imposing it. For full type inference and payload safety, we recommend defining custom event classes.
 
@@ -204,7 +210,7 @@ Use these in constraints and event construction for centralized naming.
 
 ---
 
-## 🧭 Strategic Usage
+## 🧭 Strategic Usage {#strategic-usage}
 
 EventHive offers three layers of abstraction:
 
@@ -218,7 +224,7 @@ Use `EventHive` for strict control, `UnconstrainedEventHive` for flexibility, an
 
 ---
 
-## ⚛️ React Integration
+## ⚛️ React Integration {#react-integration}
 
 EventHive provides hooks and context utilities for lifecycle-safe event handling.
 
@@ -282,38 +288,71 @@ Hooks fail gracefully if context is missing—allowing safe multi-scoping.
 new Event(type: string, payload?: P)
 ```
 
-- `type`: string identifier
-- `payload`: optional data
+- `type: string` - Event type identifier
+- `payload?: P` - Optional payload data of type P
+
+**Properties:**
+- `type: string` - The event type
+- `payload: P | undefined` - The event payload
 
 #### `UnconstrainedEventHive`
 
 ```ts
-new UnconstrainedEventHive(options?: { stateful?: boolean })
+new UnconstrainedEventHive(options?: EmitterOptions)
 ```
 
-- `stateful`: replay last event to new listeners
+- `options?: EmitterOptions` - Configuration options
+  - `stateful?: boolean` - Whether to replay last event to new listeners (default: false)
 
 **Methods:**
 
-- `addListener(type, handler, namespace?)`
-- `removeListener(type, handler, namespace?)`
-- `dispatchEvent(event, namespace?)`
+```ts
+addListener<T extends IEvent<unknown>>(
+  type: string,
+  handler: EventCallback<T>,
+  namespace?: string
+): EventSubscription
+```
+- `type: string` - Event type to listen for
+- `handler: EventCallback<T>` - Function to handle the event: `(event: T) => unknown`
+- `namespace?: string` - Optional namespace (default: "default")
+- **Returns:** `EventSubscription` - Object with `unsubscribe(): void` method
 
-#### `EventHive`
+```ts
+removeListener(
+  type: string,
+  handler: EventCallback<IEvent<unknown>>,
+  namespace?: string
+): void
+```
+- `type: string` - Event type
+- `handler: EventCallback<IEvent<unknown>>` - Handler function to remove
+- `namespace?: string` - Optional namespace (default: "default")
+
+```ts
+dispatchEvent<T extends IEvent<unknown>>(
+  event: T,
+  namespace?: string
+): void
+```
+- `event: T` - Event object to dispatch
+- `namespace?: string` - Optional namespace (default: "default")
+
+#### `EventHive<C extends EventNamespaceConstraint>`
 
 ```ts
 new EventHive(
-  constraint: EventNamespaceConstraint,
-  options?: { stateful?: boolean }
+  constraint: C,
+  options?: EmitterOptions
 )
 ```
 
-- `constraint`: allowed event types per namespace
-- `stateful`: same as above
+- `constraint: C` - Event namespace constraint defining allowed event types per namespace
+- `options?: EmitterOptions` - Configuration options (same as UnconstrainedEventHive)
 
 **Methods:**
 
-Same as `UnconstrainedEventHive`, but enforces constraints.
+Same as `UnconstrainedEventHive`, but enforces constraints and throws errors for invalid event/namespace combinations.
 
 ---
 
@@ -322,8 +361,30 @@ Same as `UnconstrainedEventHive`, but enforces constraints.
 #### `EventNamespaceConstraint`
 
 ```ts
-type EventNamespaceConstraint = {
-  [namespace: string]: string[];
+type EventNamespaceConstraint = Record<"default" | string, string[]>
+```
+
+Maps namespace names to arrays of allowed event types.
+
+#### `EventCallback<T extends IEvent<unknown>>`
+
+```ts
+type EventCallback<T extends IEvent<unknown>> = (event: T) => unknown
+```
+
+#### `EventSubscription`
+
+```ts
+interface EventSubscription {
+  unsubscribe(): void;
+}
+```
+
+#### `EmitterOptions`
+
+```ts
+type EmitterOptions = {
+  stateful?: boolean;
 }
 ```
 
@@ -332,22 +393,110 @@ type EventNamespaceConstraint = {
 ### 🌐 Common Instance
 
 ```ts
-addCommonListener(type, handler)
-removeCommonListener(type, handler)
-dispatchCommonEvent(event)
+addCommonListener(
+  type: string,
+  handler: EventCallback<IEvent<unknown>>,
+  namespace?: string
+): EventSubscription
 ```
+- `type: string` - Event type to listen for
+- `handler: EventCallback<IEvent<unknown>>` - Event handler function
+- `namespace?: string` - Optional namespace (default: "default")
+- **Returns:** `EventSubscription`
+
+```ts
+removeCommonListener(
+  type: string,
+  handler: EventCallback<IEvent<unknown>>,
+  namespace?: string
+): void
+```
+- `type: string` - Event type
+- `handler: EventCallback<IEvent<unknown>>` - Handler function to remove
+- `namespace?: string` - Optional namespace (default: "default")
+
+```ts
+dispatchCommonEvent(
+  event: IEvent<unknown>,
+  namespace?: string
+): void
+```
+- `event: IEvent<unknown>` - Event to dispatch
+- `namespace?: string` - Optional namespace (default: "default")
 
 ---
 
 ### ⚛️ React Hooks
 
-#### `useEventHiveContext(context, constraint): EventHiveContextProps`
+#### `useEventHiveContext<T extends EventNamespaceConstraint>`
 
-#### `useUnconstrainedEventHiveContext(context): UnconstrainedEventHiveContextProps`
+```ts
+useEventHiveContext<T extends EventNamespaceConstraint>(
+  context: Context<EventHiveContextProps<T>>,
+  constraint: T,
+  options?: EmitterOptions
+): { Provider: FC<PropsWithChildren> }
+```
+- `context: Context<EventHiveContextProps<T>>` - React context for the event hive
+- `constraint: T` - Event namespace constraint
+- `options?: EmitterOptions` - Optional configuration
+- **Returns:** Object with `Provider` component
 
-#### `useHiveEvent<TEvent extends Event>(props: UseHiveEventProps<TEvent>)`
+#### `useUnconstrainedEventHiveContext`
 
-#### `useCommonHiveEvent<TEvent extends Event>(props: UseHiveEventProps<TEvent>)`
+```ts
+useUnconstrainedEventHiveContext(
+  context: Context<UnconstrainedEventHiveContextProps>,
+  options?: EmitterOptions
+): { Provider: FC<PropsWithChildren> }
+```
+- `context: Context<UnconstrainedEventHiveContextProps>` - React context for the unconstrained event hive
+- `options?: EmitterOptions` - Optional configuration
+- **Returns:** Object with `Provider` component
+
+#### `useHiveEvent<T extends IEvent<unknown>>`
+
+```ts
+useHiveEvent<T extends IEvent<unknown>>(
+  props: UseHiveEventProps<T>
+): { dispatch: (event: T) => void }
+```
+
+Where `UseHiveEventProps<T>` is:
+```ts
+interface UseHiveEventProps<T extends IEvent<unknown>> {
+  context: Context<EventHiveContextProps<EventNamespaceConstraint> | UnconstrainedEventHiveContextProps>;
+  handler?: EventCallback<T>;
+  namespace?: string;
+  type: string;
+}
+```
+- `context` - React context containing the event hive
+- `handler?: EventCallback<T>` - Optional event handler function
+- `namespace?: string` - Optional namespace
+- `type: string` - Event type
+- **Returns:** Object with `dispatch` function
+
+#### `useCommonHiveEvent<T extends IEvent<unknown>>`
+
+```ts
+useCommonHiveEvent<T extends IEvent<unknown>>(
+  props: UseCommonHiveEventProps<T>
+): { dispatch: (event: T) => void }
+```
+
+Where `UseCommonHiveEventProps<T>` is:
+```ts
+type UseCommonHiveEventProps<T extends IEvent<unknown>> = {
+  handler?: EventCallback<T>;
+  namespace?: string;
+  type: string;
+}
+```
+- `handler?: EventCallback<T>` - Optional event handler function
+- `namespace?: string` - Optional namespace
+- `type: string` - Event type
+- **Returns:** Object with `dispatch` function
 
 ---
 
