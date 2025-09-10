@@ -1,6 +1,6 @@
 # 🐝 EventHive
 
-*This document was created using chatbot support*
+*This document was created using chatbot support. It still needs editing.*
 
 **EventHive** is a lightweight, type-safe event system for TypeScript applications. It offers dynamic event registration, scoped namespaces, and lifecycle-safe React integration—without the overhead of a full state management library.
 
@@ -181,14 +181,26 @@ export class FooEvent extends Event<FooEventPayload> {
 Now you can use:
 
 ```ts
+const constraint: EventNamespaceConstraint = {
+  default: [FooEvent.type, BarEvent.type], // ✅ the FooEvent class is the single source of truth
+}
+
+const fooEventHive = new EventHive(constraint);
+```
+
+```ts
 addListener<FooEvent>("foo", (event) => {
   console.log(event.payload.value); // ✅ fully typed
 });
+```
 
+```ts
 useHiveEvent<FooEvent>({
-  context,
+  context, // see React section regarding Context
   type: FooEvent.type,
-  handler,
+  handler: (event) => {
+    console.log(event.payload.value); // ✅ fully typed
+  },
 });
 ```
 
@@ -266,15 +278,19 @@ return (
 Inside any component:
 
 ```tsx
+// memoize your event handler to reduce re-rendering
+const handler = useCallback<FooEvent>((event) => {
+    console.log(event.payload.value);
+  }, []);
+
 useHiveEvent<FooEvent>({
   context: UserEventContext,
   type: FooEvent.type,
-  handler: useCallback((event) => {
-    console.log(event.payload.value);
-  }, []),
+  handler,
 });
 ```
-
+That's it. Your Event listener will be removed when the component unmounts.
+If it was the last current listener for that Event type, the Event will be unregistered.
 Hooks fail gracefully if context is missing—allowing safe multi-scoping.
 
 ### 📧 Dispatching Events
