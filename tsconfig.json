@@ -6,9 +6,10 @@
     "esModuleInterop": true,
     "jsx": "react-jsx",
     "lib": ["dom", "ES2015", "ES2016"],
-    "module": "CommonJS",
+    "module": "esnext",
     "moduleResolution": "node",
     "outDir": "./lib",
     "target": "es2015",
-  }
+  },
+  "include": ["src"],
 }
