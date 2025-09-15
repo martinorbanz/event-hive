@@ -22,8 +22,9 @@ function findConstraintMatches(
 }
 
 export class EventHive<C extends EventNamespaceConstraint> extends UnconstrainedEventHive {
+  public static readonly ERROR_CONSTRAINT_VIOLATION =
+    "Attempted to register an Event that does not match the constraint.";
   constraint: C;
-
 
   constructor(constraint: C, options?: EmitterOptions) {
     super(options);
@@ -36,7 +37,7 @@ export class EventHive<C extends EventNamespaceConstraint> extends Unconstrained
 
     if (!matches.includes(namespace)) {
       throw new Error(
-        `Attempted to register an Event that does not match the constraint: Event ${String(type)} in namespace ${String(namespace)}.` 
+        `${EventHive.ERROR_CONSTRAINT_VIOLATION} Event ${String(type)} in namespace ${String(namespace)}.` 
       );
     }
 

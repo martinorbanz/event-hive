@@ -10,7 +10,7 @@ interface IEventHive {
   addListener: (
     type: string,
     handler: EventCallback<IEvent<unknown>>
-  ) => EventSubscription;
+  ) => () => void;
   removeListener: (
     type: string,
     handler: EventCallback<IEvent<unknown>>,
@@ -48,9 +48,10 @@ export class UnconstrainedEventHive implements IEventHive {
     type: string,
     handler: EventCallback<T>,
     namespace: string = UnconstrainedEventHive.NS_DEFAULT
-  ): EventSubscription => {
+  ) => {
     this.registerEvent(type, namespace);
-    return this.registry[namespace][type].subscribe(handler as EventCallback<IEvent<unknown>>);
+    this.registry[namespace][type].subscribe(handler as EventCallback<IEvent<unknown>>);
+    return () => this.removeListener(type, handler, namespace);
   };
 
   removeListener = (
@@ -82,6 +83,10 @@ export class UnconstrainedEventHive implements IEventHive {
       delete this.registry[namespace][type];
     }
   };
+
+  listNamespaceEvents = (namespace: string) => {
+    return  this.registry[namespace] ? Object.keys(this.registry[namespace]) : undefined;
+  }
 
   private deleteNamespace = (namespace: string) => {
     delete this.registry[namespace];

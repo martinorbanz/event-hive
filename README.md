@@ -154,9 +154,9 @@ const constraint = {
 
 ---
 
-## 🔐 Type Safety {#type-safety}
+## 🔐 Type Safety
 
-EventHive supports strong typing without imposing it. For full type inference and payload safety, we recommend defining custom event classes.
+EventHive supports strong typing without imposing it. For full type inference and payload safety, we recommend defining custom event classes with `type` as a static class member.
 
 ### ✅ Recommended: Custom Event Classes
 

@@ -27,14 +27,14 @@ export const useHiveEvent= <T extends IEvent<unknown>>({
 
   useEffect(() => {
     if (handler && addListener) {
-      const subscription = addListener(
+      const removeListener = addListener(
         type,
         handler as EventCallback<IEvent<unknown>>,
         namespace
       );
 
       return () => {
-        subscription?.unsubscribe();
+        removeListener();
       };
     }
   }, [addListener, handler, namespace, type]);
