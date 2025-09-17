@@ -50,7 +50,8 @@ export class UnconstrainedEventHive implements IEventHive {
     namespace: string = UnconstrainedEventHive.NS_DEFAULT
   ): EventSubscription => {
     this.registerEvent(type, namespace);
-    return this.registry[namespace][type].subscribe(handler as EventCallback<IEvent<unknown>>);
+    this.registry[namespace][type].subscribe(handler as EventCallback<IEvent<unknown>>);
+    return { unsubscribe: () => this.removeListener(type, handler, namespace) };
   };
 
   removeListener = (

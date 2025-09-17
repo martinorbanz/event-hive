@@ -1,8 +1,25 @@
 # 🐝 EventHive
 
+*Please consider all versions below 1.0.0 **beta**.
+Versions up to 0.6.6 had packaging issues, if you have one of those installed please update.*
+
 *This document was created using chatbot support. It still needs editing.*
 
 **EventHive** is a lightweight, type-safe event system for TypeScript applications. It offers dynamic event registration, scoped namespaces, and lifecycle-safe React integration—without the overhead of a full state management library.
+
+The library is modelled after typical OOP event distribution systems using methods like `addListener` or `dispatchEvent`, and built on the observable pattern. <br>
+EventHive will take all concerns of Subjects setup and management off your hands, but you need to remove (unsubscribed) registered listeners.
+
+The provided React adaptors do that for you, so in React you can use EventHive completely carefree and intuitively. 
+For version 1.0 however, these will be moved to tdheir own package.
+
+### 🛠 Latest Fixes
+
+#### 0.6.8
+  - dynamic namespace deletion
+
+#### 0.6.7
+  - packaging issues
 
 
 ---
