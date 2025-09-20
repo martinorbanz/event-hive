@@ -10,7 +10,7 @@ export interface UseHiveEventProps<T extends IEvent<unknown>> {
   type: string;
 }
 
-export const useHiveEvent= <T extends IEvent<unknown>>({
+export const useHiveEvent = <T extends IEvent<unknown>>({
   context,
   handler,
   namespace,
@@ -27,14 +27,14 @@ export const useHiveEvent= <T extends IEvent<unknown>>({
 
   useEffect(() => {
     if (handler && addListener) {
-      const subscription = addListener(
+      const { unsubscribe } = addListener(
         type,
         handler as EventCallback<IEvent<unknown>>,
         namespace
       );
 
       return () => {
-        subscription?.unsubscribe();
+        unsubscribe();
       };
     }
   }, [addListener, handler, namespace, type]);

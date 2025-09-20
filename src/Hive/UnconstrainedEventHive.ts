@@ -35,6 +35,38 @@ export class UnconstrainedEventHive implements IEventHive {
     this._isStateful = options.stateful ?? false;
   }
 
+  addListener = <T extends IEvent<unknown>>(
+    type: string,
+    handler: EventCallback<T>,
+    namespace: string = UnconstrainedEventHive.NS_DEFAULT
+  ): EventSubscription => {
+    this.registerEvent(type, namespace);
+    this.registry[namespace][type].subscribe(handler as EventCallback<IEvent<unknown>>);
+    return { unsubscribe: () => this.removeListener(type, handler, namespace) };
+  };
+
+  deleteAllNamespaces = () => {
+    Object.keys(this.registry).forEach((namespace) => {
+      this.deleteNamespace(namespace);
+    });
+  };
+
+  private deleteNamespace = (namespace: string) => {
+    delete this.registry[namespace];
+  };
+
+  dispatchEvent = <T extends IEvent<unknown>>(
+    event: T,
+    namespace: string = UnconstrainedEventHive.NS_DEFAULT
+  ) => {
+    this.registerEvent(event.type, namespace);
+    this.registry[namespace][event.type].next(event);
+  };
+
+  listNamespaceEvents = (namespace: string) => {
+    return this.registry[namespace] ? Object.keys(this.registry[namespace]) : undefined;
+  }
+
   registerEvent(type: string, namespace: string = UnconstrainedEventHive.NS_DEFAULT) {
     if (!this.registry[namespace]) {
       this.registry[namespace] = {};
@@ -44,14 +76,21 @@ export class UnconstrainedEventHive implements IEventHive {
     }
   };
 
-  addListener = <T extends IEvent<unknown>>(
-    type: string,
-    handler: EventCallback<T>,
-    namespace: string = UnconstrainedEventHive.NS_DEFAULT
-  ): EventSubscription => {
-    this.registerEvent(type, namespace);
-    this.registry[namespace][type].subscribe(handler as EventCallback<IEvent<unknown>>);
-    return { unsubscribe: () => this.removeListener(type, handler, namespace) };
+  removeEmptyEvent = (type: string, namespace: string) => {
+    if (
+      this.registry[namespace] &&
+      this.registry[namespace][type] &&
+      this.registry[namespace][type].getSubscriberCount() === 0
+    ) {
+      delete this.registry[namespace][type];
+    }
+  };
+  removeEmptyNamespace = (namespace: string) => {
+    if (
+      this.registry[namespace] &&
+      Object.keys(this.registry[namespace]).length === 0
+    )
+      delete this.registry[namespace];
   };
 
   removeListener = (
@@ -64,41 +103,5 @@ export class UnconstrainedEventHive implements IEventHive {
     }
     this.removeEmptyEvent(type, namespace);
     this.removeEmptyNamespace(namespace);
-  };
-
-  dispatchEvent = <T extends IEvent<unknown>>(
-    event: T,
-    namespace: string = UnconstrainedEventHive.NS_DEFAULT
-  ) => {
-    this.registerEvent(event.type, namespace);
-    this.registry[namespace][event.type].next(event);
-  };
-
-  removeEmptyEvent = (type: string, namespace: string) => {
-    if (
-      this.registry[namespace] &&
-      this.registry[namespace][type] &&
-      this.registry[namespace][type].getSubscriberCount() === 0
-    ) {
-      delete this.registry[namespace][type];
-    }
-  };
-
-  private deleteNamespace = (namespace: string) => {
-    delete this.registry[namespace];
-  };
-
-  removeEmptyNamespace = (namespace: string) => {
-    if (
-      this.registry[namespace] &&
-      Object.keys(this.registry[namespace]).length === 0
-    )
-      delete this.registry[namespace];
-  };
-
-  deleteAllNamespaces = () => {
-    Object.keys(this.registry).forEach((namespace) => {
-      this.deleteNamespace(namespace);
-    });
   };
 }

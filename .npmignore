@@ -6,3 +6,7 @@ tsconfig.json
 
 .gitattributes
 ./**/.gitattributes
+
+eslint.config.js
+
+**/*.tgz
