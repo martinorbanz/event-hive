@@ -16,9 +16,9 @@ export const useCommonHiveEvent = <T extends IEvent<unknown>>({
 
   const dispatch = useMemo(
     () => (event: T) => {
-      dispatchCommonEvent(event);
+      dispatchCommonEvent(event, namespace);
     },
-    []
+    [namespace]
   );
 
   useEffect(() => {

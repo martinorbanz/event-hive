@@ -1,6 +1,6 @@
 {
   "name": "event-hive",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "description": "Dispatch and listen to events from any module.",
   "main": "lib/index.js",
   "type": "module",
@@ -12,6 +12,7 @@
   "author": "Martin Orbanz",
   "license": "MIT",
   "devDependencies": {
+    "@types/node": "^24.7.0",
     "@types/react": "^19.1.12",
     "eslint": "^9.17.0",
     "eslint-plugin-react-hooks": "^5.0.0",
@@ -21,6 +22,6 @@
     "vitest": "^3.2.4"
   },
   "peerDependencies": {
-    "react": "^19.1.1"
+    "react": ">=16.8.0"
   }
 }

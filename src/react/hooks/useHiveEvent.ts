@@ -20,9 +20,9 @@ export const useHiveEvent = <T extends IEvent<unknown>>({
 
   const dispatch = useMemo(
     () => (event: T) => {
-      dispatchEvent?.(event);
+      dispatchEvent?.(event, namespace);
     },
-    [dispatchEvent]
+    [dispatchEvent, namespace]
   );
 
   useEffect(() => {
