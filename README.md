@@ -15,6 +15,9 @@ For version 1.0 however, these will be moved to their own package.
 
 ### 🛠 Latest Fixes
 
+#### 0.7.2
+  - added github link
+
 #### 0.7.1
   - fixed namespace handling in `useHiveEvent`
   - React peer dependency version >=16.8.0

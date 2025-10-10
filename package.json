@@ -1,7 +1,11 @@
 {
   "name": "event-hive",
-  "version": "0.7.1",
+  "version": "0.7.2",
   "description": "Dispatch and listen to events from any module.",
+  "repository": {
+  "type": "git",
+  "url": "https://github.com/martinorbanz/event-hive.git"
+},
   "main": "lib/index.js",
   "type": "module",
   "scripts": {
