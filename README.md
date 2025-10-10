@@ -15,7 +15,7 @@ For version 1.0 however, these will be moved to their own package.
 
 ### 🛠 Latest Fixes
 
-#### 0.7.2
+#### 0.7.3
   - added github link
 
 #### 0.7.1
