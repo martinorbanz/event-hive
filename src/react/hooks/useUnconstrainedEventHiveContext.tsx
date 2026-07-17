@@ -1,5 +1,5 @@
 import { PropsWithChildren, useEffect, useMemo, type Context, type FC } from 'react';
-import { EmitterOptions, UnconstrainedEventHive } from '../../hive';
+import { EmitterOptions, UnconstrainedEventHive } from '../../Hive';
 import { UnconstrainedEventHiveContextProps } from '../types';
 
 function createUnconstrainedEventHiveProvider(

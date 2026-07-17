@@ -1,5 +1,5 @@
-export * from "../events"
-export * from "../observable/Emitter"
+export * from "../Events"
+export * from "../Observable/Emitter"
 export * from "./EventHive"
 export * from "./UnconstrainedEventHive"
 export {

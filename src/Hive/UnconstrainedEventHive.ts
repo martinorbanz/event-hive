@@ -1,10 +1,10 @@
-import { IEvent } from "../events";
+import { IEvent } from "../Events";
 import {
   Emitter,
   EmitterOptions,
   EventCallback,
   EventSubscription,
-} from "../observable";
+} from "../Observable";
 
 interface IEventHive {
   addListener: (

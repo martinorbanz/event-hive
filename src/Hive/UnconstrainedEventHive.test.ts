@@ -1,5 +1,5 @@
 import { describe, expect, it, test } from "vitest";
-import { Event } from "../events";
+import { Event } from "../Events";
 import { UnconstrainedEventHive } from "./UnconstrainedEventHive";
 
 class TestEvent extends Event<{ message: string }> {

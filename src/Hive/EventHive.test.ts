@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { EventHive } from "./EventHive";
-import { Event } from "../events";
+import { Event } from "../Events";
 
 describe("EventHive", () => {
   const constraint = {

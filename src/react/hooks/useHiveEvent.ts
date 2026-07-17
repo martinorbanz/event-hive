@@ -1,6 +1,6 @@
 import { useContext, useEffect, useMemo, type Context } from "react";
-import { IEvent } from "../../events";
-import { EventCallback, EventNamespaceConstraint } from "../../hive";
+import { IEvent } from "../../Events";
+import { EventCallback, EventNamespaceConstraint } from "../../Hive";
 import { EventHiveContextProps, UnconstrainedEventHiveContextProps } from "../types";
 
 export interface UseHiveEventProps<T extends IEvent<unknown>> {

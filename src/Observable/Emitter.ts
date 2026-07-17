@@ -1,4 +1,4 @@
-import { IEvent } from "../events";
+import { IEvent } from "../Events";
 
 export interface EventSubscription {
   unsubscribe: () => void;

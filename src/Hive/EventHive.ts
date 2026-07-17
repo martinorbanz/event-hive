@@ -1,5 +1,5 @@
-import { IEvent } from "../events";
-import { EmitterOptions } from "../observable";
+import { IEvent } from "../Events";
+import { EmitterOptions } from "../Observable";
 import { UnconstrainedEventHive } from "./UnconstrainedEventHive";
 
 export type EventNamespace = Array<IEvent<unknown>["type"]>;

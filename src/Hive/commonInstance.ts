@@ -1,5 +1,5 @@
-import { IEvent } from "../events";
-import { EventCallback, EventSubscription } from "../observable";
+import { IEvent } from "../Events";
+import { EventCallback, EventSubscription } from "../Observable";
 import { UnconstrainedEventHive as EventHive } from "./UnconstrainedEventHive";
 
 const commonHiveInstance = new EventHive({ stateful: true });

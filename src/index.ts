@@ -1,15 +1,15 @@
-export * from "./events";
+export * from "./Events";
 
 export {
   addCommonListener,
   dispatchCommonEvent,
   removeCommonListener
-} from "./hive";
+} from "./Hive";
 
-export { EventHive, UnconstrainedEventHive } from "./hive";
+export { EventHive, UnconstrainedEventHive } from "./Hive";
 
-export type { EventNamespace, EventNamespaceConstraint } from "./hive";
+export type { EventNamespace, EventNamespaceConstraint } from "./Hive";
 
-export type { EventCallback } from "./observable/Emitter";
+export type { EventCallback } from "./Observable/Emitter";
 
 export * from "./react";

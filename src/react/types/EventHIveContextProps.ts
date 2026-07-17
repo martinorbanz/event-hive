@@ -1,6 +1,6 @@
 import { PropsWithChildren } from 'react';
-import { EventHive, EventNamespaceConstraint } from '../../hive';
-import { UnconstrainedEventHive } from '../../hive/UnconstrainedEventHive';
+import { EventHive, EventNamespaceConstraint } from '../../Hive';
+import { UnconstrainedEventHive } from '../../Hive/UnconstrainedEventHive';
 
 export type UnconstrainedEventHiveContextProps = PropsWithChildren<{
     addListener: UnconstrainedEventHive['addListener'];

@@ -1,5 +1,5 @@
 import { PropsWithChildren, useEffect, useMemo, type Context, type FC } from 'react';
-import { EmitterOptions, EventHive, EventNamespaceConstraint } from '../../hive';
+import { EmitterOptions, EventHive, EventNamespaceConstraint } from '../../Hive';
 import { EventHiveContextProps } from '../types';
 
 function createEventHiveProvider<T extends EventNamespaceConstraint>(

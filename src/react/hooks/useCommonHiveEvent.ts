@@ -1,6 +1,6 @@
 import { useEffect, useMemo } from "react";
-import { IEvent } from "../../events";
-import { addCommonListener, dispatchCommonEvent, EventCallback } from "../../hive";
+import { IEvent } from "../../Events";
+import { addCommonListener, dispatchCommonEvent, EventCallback } from "../../Hive";
 import { UseHiveEventProps } from "./useHiveEvent";
 
 type UseCommonHiveEventProps<T extends IEvent<unknown>> = Omit<
