@@ -2,13 +2,12 @@ import { PropsWithChildren, useEffect, useMemo, type Context, type FC } from 're
 import { EmitterOptions, EventHive, EventNamespaceConstraint } from '../../hive';
 import { EventHiveContextProps } from '../types';
 
-export function useEventHiveContext<T extends EventNamespaceConstraint>(
+function createEventHiveProvider<T extends EventNamespaceConstraint>(
     context: Context<EventHiveContextProps<T>>,
     constraint: T,
     options?: EmitterOptions,
-): { Provider: FC<PropsWithChildren> } {
-
-    const Provider: FC<PropsWithChildren> = (props) => {
+): FC<PropsWithChildren> {
+    return function EventHiveProvider(props) {
         const { children } = props;
         const eventHive = useMemo(() => new EventHive(constraint, options), []);
 
@@ -25,6 +24,18 @@ export function useEventHiveContext<T extends EventNamespaceConstraint>(
 
         return <context.Provider value={value}>{children}</context.Provider>;
     };
+}
+
+export function useEventHiveContext<T extends EventNamespaceConstraint>(
+    context: Context<EventHiveContextProps<T>>,
+    constraint: T,
+    options?: EmitterOptions,
+): { Provider: FC<PropsWithChildren> } {
+
+    const Provider = useMemo(
+        () => createEventHiveProvider(context, constraint, options),
+        [],
+    );
 
     return { Provider };
 };

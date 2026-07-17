@@ -1,6 +1,6 @@
 {
   "name": "event-hive",
-  "version": "0.7.3",
+  "version": "0.7.4",
   "description": "Dispatch and listen to events from any module.",
   "repository": {
   "type": "git",

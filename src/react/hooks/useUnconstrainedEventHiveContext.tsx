@@ -2,12 +2,11 @@ import { PropsWithChildren, useEffect, useMemo, type Context, type FC } from 're
 import { EmitterOptions, UnconstrainedEventHive } from '../../hive';
 import { UnconstrainedEventHiveContextProps } from '../types';
 
-export function useUnconstrainedEventHiveContext(
+function createUnconstrainedEventHiveProvider(
     context: Context<UnconstrainedEventHiveContextProps>,
-    options?: EmitterOptions
-): { Provider: FC<PropsWithChildren> } {
-
-    const Provider: FC<PropsWithChildren> = (props) => {
+    options?: EmitterOptions,
+): FC<PropsWithChildren> {
+    return function UnconstrainedEventHiveProvider(props) {
         const { children } = props;
         const eventHive = useMemo(() => new UnconstrainedEventHive(options), []);
 
@@ -24,6 +23,17 @@ export function useUnconstrainedEventHiveContext(
 
         return <context.Provider value={value}>{children}</context.Provider>;
     };
+}
+
+export function useUnconstrainedEventHiveContext(
+    context: Context<UnconstrainedEventHiveContextProps>,
+    options?: EmitterOptions
+): { Provider: FC<PropsWithChildren> } {
+
+    const Provider = useMemo(
+        () => createUnconstrainedEventHiveProvider(context, options),
+        [],
+    );
 
     return { Provider };
 };

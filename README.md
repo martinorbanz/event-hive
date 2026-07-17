@@ -15,6 +15,9 @@ For version 1.0 however, these will be moved to their own package.
 
 ### 🛠 Latest Fixes
 
+#### 0.7.4
+  - fixed React context `Provider` being recreated (and its subtree remounted) on every render in `useEventHiveContext` / `useUnconstrainedEventHiveContext`
+
 #### 0.7.3
   - added github link
 
